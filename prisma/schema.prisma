@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          UserRole
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  active        Boolean        @default(true)
+  emailVerified Boolean        @default(false)
+  lastLoginAt   DateTime?
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Client {
+  id           String        @id @default(uuid())
+  name         String
+  email        String?       @unique
+  phone        String
+  address      String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+
+  @@map("clients")
+}
+
+model Service {
+  id                  String               @id @default(uuid())
+  name                String
+  description         String?
+  duration            Int
+  price               Decimal              @db.Decimal(10, 2)
+  active              Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  appointmentServices AppointmentService[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id              String               @id @default(uuid())
+  clientId        String
+  appointmentDate DateTime
+  startTime       String
+  endTime         String
+  status          AppointmentStatus    @default(PENDING)
+  notes           String?
+  travelFee       Decimal              @default(0) @db.Decimal(10, 2)
+  totalPrice      Decimal              @default(0) @db.Decimal(10, 2)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  services        AppointmentService[]
+  client          Client               @relation(fields: [clientId], references: [id])
+  payment         Payment?
+
+  @@map("appointments")
+}
+
+model AppointmentService {
+  id                String      @id @default(uuid())
+  appointmentId     String
+  serviceId         String
+  priceAtBooking    Decimal     @db.Decimal(10, 2)
+  durationAtBooking Int
+  appointment       Appointment @relation(fields: [appointmentId], references: [id])
+  service           Service     @relation(fields: [serviceId], references: [id])
+
+  @@map("appointment_services")
+}
+
+model Schedule {
+  id         String  @id @default(uuid())
+  weekday    Int
+  startTime  String
+  endTime    String
+  lunchStart String?
+  lunchEnd   String?
+  active     Boolean @default(true)
+
+  @@map("schedules")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  appointmentId String        @unique
+  amount        Decimal       @db.Decimal(10, 2)
+  status        PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod
+  createdAt     DateTime      @default(now())
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+
+  @@map("payments")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model BlockedDate {
+  id        String   @id @default(uuid())
+  date      DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@map("blocked_dates")
+}
+
+model BusinessSettings {
+  id                  String   @id @default(uuid())
+  businessName        String
+  defaultTravelFee    Decimal  @default(0) @db.Decimal(10, 2)
+  minimumAdvanceHours Int      @default(2)
+  maximumAdvanceDays  Int      @default(90)
+  appointmentInterval Int      @default(15)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("business_settings")
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+  SUPER_ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+}
