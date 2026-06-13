@@ -14,4 +14,8 @@ clientRoutes.get('/', authMiddleware, clientController.findAll)
 
 clientRoutes.get('/:id', authMiddleware, clientController.findById)
 
+clientRoutes.put('/:id', authMiddleware, clientController.update)
+
+clientRoutes.delete('/:id', authMiddleware, clientController.delete)
+
 export { clientRoutes }

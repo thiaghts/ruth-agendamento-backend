@@ -1,5 +1,7 @@
 import { Router } from 'express'
 
+import { debugRoutes } from './debug.routes.js'
+
 import { authRoutes } from '../modules/auth/routes/auth.routes.js'
 import { clientRoutes } from '../modules/clients/routes/client.routes.js'
 
@@ -14,6 +16,8 @@ routes.get('/health', (_, res) => {
 })
 
 routes.use('/auth', authRoutes)
+
+routes.use('/debug', debugRoutes)
 
 routes.use('/clients', clientRoutes)
 

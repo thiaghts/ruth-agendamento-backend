@@ -1,6 +1,7 @@
 import { ClientRepository } from '../repositories/client.repository.js'
 
 import type { CreateClientDto } from '../dto/create-client.dto.js'
+import type { UpdateClientDto } from '../dto/update-client.dto.js'
 
 export class ClientService {
   private readonly clientRepository = new ClientRepository()
@@ -21,5 +22,21 @@ export class ClientService {
     }
 
     return client
+  }
+
+  async update(id: string, data: UpdateClientDto) {
+    await this.findById(id)
+
+    return this.clientRepository.update(id, data)
+  }
+
+  async delete(id: string) {
+    await this.findById(id)
+
+    await this.clientRepository.delete(id)
+
+    return {
+      message: 'Client deleted successfully',
+    }
   }
 }

@@ -24,4 +24,21 @@ export class ClientRepository {
       },
     })
   }
+
+  async update(id: string, data: Prisma.ClientUpdateInput) {
+    return prisma.client.update({
+      where: {
+        id,
+      },
+      data,
+    })
+  }
+
+  async delete(id: string) {
+    return prisma.client.delete({
+      where: {
+        id,
+      },
+    })
+  }
 }
