@@ -24,4 +24,30 @@ export class ServiceRepository {
       },
     })
   }
+
+  async update(
+    id: string,
+    data: {
+      name?: string
+      description?: string
+      duration?: number
+      price?: number
+      active?: boolean
+    },
+  ) {
+    return prisma.service.update({
+      where: {
+        id,
+      },
+      data,
+    })
+  }
+
+  async delete(id: string) {
+    return prisma.service.delete({
+      where: {
+        id,
+      },
+    })
+  }
 }

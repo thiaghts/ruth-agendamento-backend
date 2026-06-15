@@ -52,4 +52,48 @@ export class ServiceController {
       next(error)
     }
   }
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Service id is required',
+        })
+      }
+
+      const result = await this.serviceService.update(id, req.body)
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Service id is required',
+        })
+      }
+
+      const result = await this.serviceService.delete(id)
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }

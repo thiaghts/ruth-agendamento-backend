@@ -12,4 +12,4 @@ export const updateServiceSchema = z.object({
   active: z.boolean().optional(),
 })
 
-export type UpdateServiceSchema = z.infer<typeof updateServiceSchema>
+export type UpdateServiceDto = z.infer<typeof updateServiceSchema>
